@@ -13,6 +13,8 @@ public class SharedPrefDatabase {
     public static final String KEY_DESIGNATION = "KEY_DESIGNATION";
     public static final String KEY_DEPARTMENT = "KEY_DEPARTMENT";
     public static final String KEY_PROJECT_NAME = "KEY_PROJECT_NAME";
+    public static final String KEY_PROJECT_LAT = "KEY_PROJECT_LAT";
+    public static final String KEY_PROJECT_LON = "KEY_PROJECT_LON";
 
 
     SharedPreferences sharedPreferences;
@@ -75,6 +77,25 @@ public class SharedPrefDatabase {
     }
     public String RetrivePROJECT_NAME(){
         String text = sharedPreferences.getString(KEY_PROJECT_NAME, null);
+        return text;
+    }
+
+
+    public void StorePROJECT_LAT(String data){
+        editor.putString(KEY_PROJECT_LAT, data);
+        editor.commit();
+    }
+    public String RetrivePROJECT_LAT(){
+        String text = sharedPreferences.getString(KEY_PROJECT_LAT, null);
+        return text;
+    }
+
+    public void StorePROJECT_LON(String data){
+        editor.putString(KEY_PROJECT_LON, data);
+        editor.commit();
+    }
+    public String RetrivePROJECT_LON(){
+        String text = sharedPreferences.getString(KEY_PROJECT_LON, null);
         return text;
     }
 

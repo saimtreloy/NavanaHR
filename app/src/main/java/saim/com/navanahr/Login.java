@@ -1,9 +1,17 @@
 package saim.com.navanahr;
 
+import android.*;
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -33,10 +41,24 @@ public class Login extends AppCompatActivity {
     EditText inputEmail, inputPassword;
     Button btnLogin;
 
+    String imie = "";
+    TelephonyManager telephonyManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        haveStoragePermission();
+
+        telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Log.d("SAIM IMIE1", telephonyManager.getImei());
+        } else {
+            Log.d("SAIM IMIE2", telephonyManager.getDeviceId());
+        }
+
         init();
     }
 
@@ -87,6 +109,8 @@ public class Login extends AppCompatActivity {
                                 String designation = jsonObject.getString("designation");
                                 String department = jsonObject.getString("department");
                                 String project_name = jsonObject.getString("project_name");
+                                String lat = jsonObject.getString("lat");
+                                String lon = jsonObject.getString("lon");
 
 
                                 new SharedPrefDatabase(getApplicationContext()).StoreID(id);
@@ -94,6 +118,8 @@ public class Login extends AppCompatActivity {
                                 new SharedPrefDatabase(getApplicationContext()).StoreDESIGNATION(designation);
                                 new SharedPrefDatabase(getApplicationContext()).StoreDEPARTMENT(department);
                                 new SharedPrefDatabase(getApplicationContext()).StorePROJECT_NAME(project_name);
+                                new SharedPrefDatabase(getApplicationContext()).StorePROJECT_LAT(lat);
+                                new SharedPrefDatabase(getApplicationContext()).StorePROJECT_LON(lon);
 
                                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                 finish();
@@ -123,6 +149,21 @@ public class Login extends AppCompatActivity {
         };
         stringRequest.setShouldCache(false);
         MySingleton.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);
+    }
+
+
+    public boolean haveStoragePermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED ) {
+                return true;
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE, android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                return false;
+            }
+        }
+        else {
+            return true;
+        }
     }
 
 }

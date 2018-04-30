@@ -2,12 +2,14 @@ package saim.com.navanahr;
 
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import saim.com.navanahr.Utils.SharedPrefDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
         haveStoragePermission();
 
+        Log.d("SAIM SERVER LAT LON", new SharedPrefDatabase(getApplicationContext()).RetrivePROJECT_LAT() + " " + new SharedPrefDatabase(getApplicationContext()).RetrivePROJECT_LON());
+
         new Handler().post(updateLocation);
     }
 
@@ -31,8 +35,34 @@ public class MainActivity extends AppCompatActivity {
 
                 double latitude = gps.getLatitude();
                 double longitude = gps.getLongitude();
-                Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
                 Log.d("SAIM POSITION", "Lat : " + latitude + "\nLon : " + longitude);
+
+
+                double sLat = Double.parseDouble(new SharedPrefDatabase(getApplicationContext()).RetrivePROJECT_LAT());
+                double sLatMax = (double) (sLat + 0.000300);
+                double sLatMin = (double) (sLat - 0.000300);
+                double sLon = Double.parseDouble(new SharedPrefDatabase(getApplicationContext()).RetrivePROJECT_LON());
+                double sLonMax = (double) (sLon + 0.000300);
+                double sLonMin = (double) (sLon - 0.000300);
+                Log.d("SAIM POSITION MAX MIN", "Lat Max: " + sLatMax + "\nLat Min : " + sLatMin + "\nLon Max: " + sLonMax + "\nLon Min : " + sLonMin);
+                /*if ( (latitude <= sLatMax && latitude >= sLatMin) && (longitude <= sLatMax && longitude >= sLonMin ) ) {
+                    Toast.makeText(getApplicationContext(), "Your Location is in office" + longitude, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Your Location is not in office" + longitude, Toast.LENGTH_LONG).show();
+                }*/
+
+                if (latitude < sLatMax && latitude > sLatMin) {
+                    if (longitude < sLonMax && longitude > sLonMin) {
+                        Toast.makeText(getApplicationContext(), "Your Location is in office", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Your Location is not not in office2", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Your Location is not in office1", Toast.LENGTH_LONG).show();
+                }
+
+
             }else{
                 gps.showSettingsAlert();
             }
